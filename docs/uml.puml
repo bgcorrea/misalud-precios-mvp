@@ -1,0 +1,48 @@
+@startuml
+title Módulo de Precios MiSalud - Vista de Componentes
+
+actor "Departamento de Precios" as Operador
+actor "Gerencia Precios" as Gerencia
+
+package "Front-end SPA" {
+  component "Tabla de Productos\n(Semáforo + edición)" as UILista
+  component "Panel Histórico" as UIPanel
+}
+
+package "API Backend (Node.js demo / Laravel 7 objetivo)" {
+  component "Controlador Precios" as CPrecios
+  component "Controlador Listas" as CListas
+  component "Controlador Parámetros" as CParams
+  component "Servicio PricingDomain\n(CPP, redondeo 90, semáforo)" as Dominio
+  component "Repositorio Productos" as RepoProductos
+  component "Repositorio Logs" as RepoLogs
+}
+
+database "SQLite Demo\nMSSQL Corporativo" as DB
+component "Job Nocturno CPP" as JobCPP
+
+Operador --> UILista : Gestiona precios propuestos\nConsulta semáforos
+Operador --> UIPanel : Consulta compras/ventas recientes
+Gerencia --> UILista : Ajusta rangos autorizados (vía modal)\nGenera listas base
+
+UILista --> CPrecios : REST /api/productos\nGET, PUT
+UILista --> CListas : POST /listas/generar\nGET /listas/vigente
+UILista --> CParams : GET /parametros (visualización)
+UIPanel --> CPrecios : GET /productos/{id}/historico
+
+CPrecios --> Dominio : calcularCPP(), aplicarRegla90(), semaforo()
+CPrecios --> RepoProductos : consultas y actualizaciones
+CListas --> RepoProductos
+CListas --> RepoLogs
+CParams --> RepoLogs
+
+RepoProductos --> DB
+RepoLogs --> DB
+
+JobCPP --> Dominio
+JobCPP --> RepoProductos
+JobCPP --> RepoLogs
+
+
+
+@enduml

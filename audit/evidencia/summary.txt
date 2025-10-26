@@ -1,0 +1,11 @@
+✅ Healthcheck /api/health 200
+✅ GET /api/parametros 200
+✅ GET /api/productos?limit=5 200 (t=5→0.002405s, t=25→0.001981s)
+✅ GET /api/productos/1/historico 200
+✅ PUT /api/parametros/1 200
+✅ PUT /api/productos/1/precio-propuesto (válido) 200
+✅ PUT /api/productos/1/precio-propuesto (fuera de rango) rechazado (400)
+✅ POST /api/listas/generar 201 (ID 2)
+✅ GET /api/listas/vigente 200
+✅ GET /api/listas/2/descargar 200
+✅ Artefactos clave detectados (PDF=50649 bytes)

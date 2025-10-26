@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiSalud · Módulo de Precios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>MiSalud · Módulo de Precios</h1>
+    <div class="topbar__actions">
+      <button id="btnGenerarLista" class="button button--primary">Generar Lista Base</button>
+      <select id="rolSelect">
+        <option value="Operador">Operador</option>
+        <option value="Gerencia">Gerencia</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="layout">
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="main-content">
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">📋 Catálogo de Productos</h2>
+        </div>
+        <div class="table-section">
+          <table id="productosTable">
+            <thead>
+              <tr>
+                <th>Código Interno</th>
+                <th>Código Barras</th>
+                <th>Descripción</th>
+                <th>Costo Promedio</th>
+                <th>Precio Actual</th>
+                <th>Precio Propuesto</th>
+                <th>Margen</th>
+                <th>Semáforo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button id="prevPage" class="button button--outline">← Anterior</button>
+          <span id="pageInfo"></span>
+          <button id="nextPage" class="button button--outline">Siguiente →</button>
+        </div>
+      </section>
+    </div>
+
+    <aside class="sidebar">
+      <section class="side-panel" id="listasPanel">
+        <h2>📑 Listas Base</h2>
+        <div id="listasContent">
+          <div class="empty-state">
+            <p>Cargando listas...</p>
+          </div>
+        </div>
+        <button id="btnGenerarListaSide" class="button button--success" style="width: 100%; margin-top: 1rem;">
+          ➕ Generar Nueva Lista
+        </button>
+      </section>
+
+      <section class="side-panel" id="sidePanel">
+        <h2>📊 Historial reciente</h2>
+        <div class="side-panel__content" id="sidePanelContent">
+          <p>Seleccione un producto para ver sus últimas compras y ventas.</p>
+        </div>
+        <button id="closePanel" class="button button--outline side-panel__close">Cerrar</button>
+      </section>
+    </aside>
+  </main>
+
+  <template id="historicoTemplate">
+    <div class="historico">
+      <h3>Compras</h3>
+      <div data-compras></div>
+      <h3>Ventas</h3>
+      <div data-ventas></div>
+    </div>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+RequisitoID,Descripcion,HistoriaCasoUso,PruebaID
+RF-001,Calcular CPP y margen para lista de productos,HCU-001 Gestión de precios,UNIT-CPP|UNIT-RED90|API-GET
+RF-002,Validar edición de precio propuesto según rango autorizado,HCU-002 Ajuste de precio propuesto,UNIT-RANGO|API-UPDATE
+RF-003,Semáforo de variación parametrizable por categoría,HCU-001 Gestión de precios,UNIT-SEMAFORO|API-GET
+RF-004,Generar lista base con correlativo y vigencia,HCU-003 Emisión de lista base,API-LISTA-GENERAR
+RF-005,Descargar lista base histórica,HCU-004 Descarga de lista,API-LISTA-DESCARGA
+RF-006,Mostrar historial de compras y ventas reciente,HCU-005 Consulta historial,API-HISTORICO
+RF-007,Registrar logs de ajustes de precios y parámetros,HCU-006 Auditoría,API-UPDATE|API-LISTA-GENERAR
+RF-008,Recalcular CPP nocturno para catálogo,HCU-007 Batch de costos,JOB-NIGHTLY
+RNF-001,Cumplir con rendimiento ≤5s en primera carga,CRN-Performance,API-GET
+RNF-002,Compatibilidad con Laravel 7 + MSSQL corporativo,CRN-Compatibilidad,REV-DOC
+RNF-003,Controles de acceso por rol (Gerencia/Operador),CRN-Seguridad,API-LISTA-GENERAR|API-UPDATE
+RNF-004,Generación de logs persistentes,CRN-Auditoria,API-UPDATE|API-LISTA-GENERAR
+RNF-005,UI responsive con render cliente y validaciones,CRN-UX,REV-UI

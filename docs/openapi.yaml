@@ -1,0 +1,320 @@
+openapi: 3.0.3
+info:
+  title: MiSalud Módulo de Precios API
+  version: 0.1.0
+  description: API mínima para el módulo de precios de MiSalud.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/health:
+    get:
+      summary: Healthcheck del servicio
+      responses:
+        '200':
+          description: Estado del servicio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                  ts:
+                    type: string
+                    format: date-time
+  /api/productos:
+    get:
+      summary: Listado paginado de productos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+          description: Número de página (1 por defecto)
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          description: Tamaño de página (25 por defecto)
+      responses:
+        '200':
+          description: Productos con cálculo de precios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  total:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Producto'
+  /api/productos/{id}/precio-propuesto:
+    put:
+      summary: Actualiza el precio propuesto de un producto
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [precioPropuesto]
+              properties:
+                precioPropuesto:
+                  type: number
+                usuario:
+                  type: string
+      responses:
+        '200':
+          description: Precio actualizado
+        '400':
+          description: Validación fallida
+  /api/parametros:
+    get:
+      summary: Obtiene los parámetros por categoría
+      responses:
+        '200':
+          description: Parámetros actuales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParametrosCategoria'
+  /api/parametros/{categoriaId}:
+    put:
+      summary: Actualiza márgenes y umbrales de una categoría
+      parameters:
+        - in: path
+          name: categoriaId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosEntrada'
+      responses:
+        '200':
+          description: Parámetros actualizados
+        '400':
+          description: Validación fallida
+        '403':
+          description: Requiere rol Gerencia
+  /api/listas/generar:
+    post:
+      summary: Genera una nueva lista base
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario:
+                  type: string
+      responses:
+        '201':
+          description: Lista creada
+        '403':
+          description: Requiere rol Gerencia
+  /api/listas/vigente:
+    get:
+      summary: Obtiene la lista base vigente
+      responses:
+        '200':
+          description: Lista vigente encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListaVigente'
+        '404':
+          description: No hay lista vigente
+  /api/listas/{id}/descargar:
+    get:
+      summary: Descarga una lista base en CSV
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: sep
+          schema:
+            type: string
+            enum: [',', ';']
+          description: Separador del CSV
+      responses:
+        '200':
+          description: CSV generado
+          content:
+            text/csv:
+              schema:
+                type: string
+  /api/logs:
+    get:
+      summary: Consulta de logs del módulo
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: Logs recientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogEntry'
+  /api/logs/{entidad}/{id}:
+    get:
+      summary: Consulta logs por entidad
+      parameters:
+        - in: path
+          name: entidad
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: Logs filtrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogEntry'
+components:
+  schemas:
+    Producto:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigoInterno:
+          type: string
+        codigoBarras:
+          type: string
+        descripcion:
+          type: string
+        categoria:
+          type: string
+        fragmentado:
+          type: boolean
+        costoPromedio:
+          type: number
+          nullable: true
+        precioActual:
+          type: number
+        precioSugerido:
+          type: number
+          nullable: true
+        precioPropuesto:
+          type: number
+        margenAplicado:
+          type: number
+          nullable: true
+        semaforo:
+          type: string
+          enum: [ROJO, AMARILLO, VERDE]
+        parametrosCategoria:
+          $ref: '#/components/schemas/ParametrosCategoria'
+    ParametrosCategoria:
+      type: object
+      properties:
+        categoria_id:
+          type: integer
+        margen:
+          type: number
+        umbral_rojo:
+          type: number
+        umbral_amarillo:
+          type: number
+        rango_edicion_min:
+          type: number
+        rango_edicion_max:
+          type: number
+    ParametrosEntrada:
+      type: object
+      required: [margen, umbralRojo, umbralAmarillo, rangoEdicionMin, rangoEdicionMax, usuario]
+      properties:
+        margen:
+          type: number
+          format: double
+        umbralRojo:
+          type: number
+        umbralAmarillo:
+          type: number
+        rangoEdicionMin:
+          type: number
+        rangoEdicionMax:
+          type: number
+        usuario:
+          type: string
+    ListaVigente:
+      type: object
+      properties:
+        id:
+          type: integer
+        codigo:
+          type: string
+        fecha_generacion:
+          type: string
+          format: date-time
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        entidad:
+          type: string
+        entidad_id:
+          type: integer
+          nullable: true
+        accion:
+          type: string
+        usuario:
+          type: string
+        antes:
+          type: object
+          nullable: true
+        despues:
+          type: object
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
