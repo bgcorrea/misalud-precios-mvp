@@ -32,11 +32,13 @@ jobs:
         run: npm run api:validate
 
       - name: Export PDF informativo
+        continue-on-error: true
         run: |
           cd ..
-          npx --yes md-to-pdf report/informe_1_pagina.md
+          npx --yes md-to-pdf report/informe_1_pagina.md --config-file .md2pdf.config.js
 
       - name: Upload artefacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: informes
