@@ -1,6 +1,10 @@
+<div align="center">
+  <img src="docs/header.svg" alt="MiSalud - Módulo de Precios" width="800">
+</div>
+
 # MiSalud · Módulo de Precios (MVP)
 
-[![CI](https://github.com/your-org/misalud-precios-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/misalud-precios-mvp/actions/workflows/ci.yml)
+[![CI](https://github.com/bgcorrea/misalud-precios-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/bgcorrea/misalud-precios-mvp/actions/workflows/ci.yml)
 
 Proyecto académico que entrega un demo funcional del módulo de precios de MiSalud: cálculo de CPP ponderado (incluye fragmentados), regla de “terminado en 90”, semáforo parametrizable por categoría, auditoría completa y gestión de listas base.
 

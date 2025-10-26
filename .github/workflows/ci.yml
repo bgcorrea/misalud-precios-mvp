@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: misalud-precios-mvp/app
+        working-directory: app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: misalud-precios-mvp/app/package-lock.json
+          cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -41,6 +41,6 @@ jobs:
         with:
           name: informes
           path: |
-            misalud-precios-mvp/report/informe_1_pagina.pdf
-            misalud-precios-mvp/report/aptc105_s4_apellidonombre.pdf
-            misalud-precios-mvp/docs/openapi.yaml
+            report/informe_1_pagina.pdf
+            report/aptc105_s4_apellidonombre.pdf
+            docs/openapi.yaml
