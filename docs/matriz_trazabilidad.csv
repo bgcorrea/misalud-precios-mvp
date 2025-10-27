@@ -1,14 +1,27 @@
-RequisitoID,Descripcion,HistoriaCasoUso,PruebaID
-RF-001,Calcular CPP y margen para lista de productos,HCU-001 Gestión de precios,UNIT-CPP|UNIT-RED90|API-GET
-RF-002,Validar edición de precio propuesto según rango autorizado,HCU-002 Ajuste de precio propuesto,UNIT-RANGO|API-UPDATE
-RF-003,Semáforo de variación parametrizable por categoría,HCU-001 Gestión de precios,UNIT-SEMAFORO|API-GET
-RF-004,Generar lista base con correlativo y vigencia,HCU-003 Emisión de lista base,API-LISTA-GENERAR
-RF-005,Descargar lista base histórica,HCU-004 Descarga de lista,API-LISTA-DESCARGA
-RF-006,Mostrar historial de compras y ventas reciente,HCU-005 Consulta historial,API-HISTORICO
-RF-007,Registrar logs de ajustes de precios y parámetros,HCU-006 Auditoría,API-UPDATE|API-LISTA-GENERAR
-RF-008,Recalcular CPP nocturno para catálogo,HCU-007 Batch de costos,JOB-NIGHTLY
-RNF-001,Cumplir con rendimiento ≤5s en primera carga,CRN-Performance,API-GET
-RNF-002,Compatibilidad con Laravel 7 + MSSQL corporativo,CRN-Compatibilidad,REV-DOC
-RNF-003,Controles de acceso por rol (Gerencia/Operador),CRN-Seguridad,API-LISTA-GENERAR|API-UPDATE
-RNF-004,Generación de logs persistentes,CRN-Auditoria,API-UPDATE|API-LISTA-GENERAR
-RNF-005,UI responsive con render cliente y validaciones,CRN-UX,REV-UI
+ID Requisito,Tipo,Prioridad,Descripción Breve,Historia de Usuario,Componente Principal,Archivo de Prueba,Estado,Observaciones
+RF-001,Funcional,Alta,Cálculo de Costo Promedio Ponderado,HU-001,app/src/domain/pricing.ts,tests/pricing.spec.ts,✅ Implementado,Soporta productos fragmentados con normalización
+RF-002,Funcional,Alta,Cálculo precio sugerido con margen parametrizable,HU-002,app/src/domain/params.ts,tests/pricing.spec.ts,✅ Implementado,Márgenes configurables por categoría
+RF-003,Funcional,Media,Regla de redondeo terminado en 90,HU-003,app/src/domain/pricing.ts,tests/pricing.spec.ts,✅ Implementado,Base 40 para redondeo (≤40 → .90 inferior; >40 → .90 superior)
+RF-004,Funcional,Alta,Sistema de semáforo de alertas,HU-004,app/src/domain/pricing.ts,tests/pricing.spec.ts,✅ Implementado,ROJO/AMARILLO/VERDE según umbrales parametrizables
+RF-005,Funcional,Alta,Rango de edición controlado,HU-005,app/src/domain/params.ts,tests/api.spec.ts,✅ Implementado,Validación backend + frontend con alertas
+RF-006,Funcional,Alta,Generación de listas base con correlativo,HU-006,app/src/server.ts (POST /api/listas/generar),tests/api.spec.ts,✅ Implementado,Código auto-incremental 001-999 con vigencia
+RF-007,Funcional,Media,Descarga de listas en CSV,HU-007,app/src/server.ts (GET /api/listas/:id/descargar),tests/api.spec.ts,✅ Implementado,Separador configurable y encoding UTF-8
+RF-008,Funcional,Media,Historial de compras y ventas,HU-008,app/src/server.ts (GET /api/productos/:id/historico),tests/api.spec.ts,✅ Implementado,Últimas 3 compras + ventas por período (7d/30d/90d)
+RF-009,Funcional,Alta,Manejo de productos fragmentados,HU-009,app/src/domain/fragments.ts,tests/pricing.spec.ts,✅ Implementado,Factor de conversión para dividir CPP por unidades
+RF-010,Funcional,Media,Búsqueda y filtros de productos,HU-010,"app/src/server.ts (query params), app/src/ui/app.js",Manual,✅ Implementado,Búsqueda por código/descripción + filtros categoría/semáforo
+RF-011,Funcional,Alta,Sistema de autenticación con roles,HU-011,"app/src/auth.ts, app/src/ui/login.html",tests/api.spec.ts,✅ Implementado,Roles Operador/Gerencia con tokens de 8h
+RF-012,Funcional,Alta,Sistema de auditoría y logs,HU-012,app/src/server.ts (registrarLog helper),tests/api.spec.ts,✅ Implementado,Logs con antes/después en JSON para todas las operaciones críticas
+RNF-001,No Funcional,Alta,Performance con tiempos de carga <5s,N/A,app/src/server.ts (paginación y límites),tests/api.spec.ts,✅ Implementado,Paginación servidor con máx 100 registros por página
+RNF-002,No Funcional,Alta,Procesamiento backend para evitar sobrecarga cliente,N/A,app/src/server.ts (cálculos CPP/semáforo/precio),Manual,✅ Implementado,Todos los cálculos se realizan en servidor
+RNF-003,No Funcional,Media,Documentación completa (manual operativo y técnico),N/A,"docs/manual_operativo.md, docs/manual_tecnico.md",Manual,✅ Implementado,Manual operativo 50+ páginas y manual técnico 70+ páginas
+RNF-004,No Funcional,Alta,Compatibilidad con SQL Server y Laravel 7,N/A,"db/schema_mssql.sql, db/seed_mssql.sql, README (sección migración)",Manual,✅ Implementado,Scripts SQL Server + guía migración Laravel incluidos
+RNF-005,No Funcional,Alta,Seguridad con control de acceso y rate limiting,N/A,"app/src/middleware/auth.ts, app/src/server.ts (adminLimiter)",tests/api.spec.ts,✅ Implementado,Autenticación requerida + rate limiting 100 req/15min en endpoints admin
+RNF-006,No Funcional,Media,Usabilidad y accesibilidad de la interfaz,N/A,"app/src/ui/index.html, app/src/ui/app.js, Tailwind CSS",Manual,✅ Implementado,Diseño responsivo con aria-labels y feedback visual
+RF-001.1,Funcional,Alta,Proceso nocturno de recálculo CPP,HU-001,app/src/jobs/nightly_cost_update.ts,tests/pricing.spec.ts,✅ Implementado,Job programable para ejecutar diariamente
+RF-002.1,Funcional,Alta,Gestión de parámetros por categoría,HU-002,app/src/server.ts (PUT /api/parametros/:categoriaId),tests/api.spec.ts,✅ Implementado,Solo rol Gerencia puede modificar + validación de rangos
+RF-004.1,Funcional,Media,Parametrización de umbrales por categoría,HU-004,app/src/domain/params.ts,tests/pricing.spec.ts,✅ Implementado,Umbrales configurables en tabla parametros_categoria
+RF-006.1,Funcional,Alta,Control de versiones de listas,HU-006,app/src/server.ts (tabla listas_base),tests/api.spec.ts,✅ Implementado,Solo una lista vigente a la vez
+RF-010.1,Funcional,Media,Búsqueda full-text en múltiples campos,HU-010,app/src/server.ts (WHERE clauses dinámicos),Manual,✅ Implementado,Búsqueda en codigo_interno OR codigo_barras OR descripcion
+RF-011.1,Funcional,Alta,Generación y validación de tokens,HU-011,app/src/auth.ts (generateToken/validateToken),tests/api.spec.ts,✅ Implementado,Tokens base64 con expiración 8 horas
+RF-011.2,Funcional,Alta,Middleware de autorización por rol,HU-011,app/src/middleware/auth.ts (requireGerencia),tests/api.spec.ts,✅ Implementado,Protege endpoints administrativos
+RF-012.1,Funcional,Alta,Endpoints de consulta de logs,HU-012,"app/src/server.ts (GET /api/logs, GET /api/logs/:entidad/:id)",tests/api.spec.ts,✅ Implementado,Logs con filtros por entidad y límite configurable
