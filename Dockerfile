@@ -25,6 +25,7 @@ COPY app/package*.json ./
 COPY app/src ./src
 COPY app/scripts ./scripts
 COPY app/tsconfig.json ./
+COPY app/start.sh ./start.sh
 
 # Copy database schemas and seeds (required for initialization)
 COPY db /db
@@ -50,5 +51,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "const port = process.env.PORT || 3000; require('http').get('http://localhost:' + port + '/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
 
-# Start application
-CMD ["tsx", "src/server.ts"]
+# Start application with debug script
+CMD ["sh", "./start.sh"]
