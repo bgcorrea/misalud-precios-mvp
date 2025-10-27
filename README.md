@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/header.svg" alt="MiSalud - Módulo de Precios" width="800">
+  <img src="docs/header.png" alt="MiSalud - Módulo de Precios" width="800">
 </div>
 
 # MiSalud · Módulo de Precios (MVP)
