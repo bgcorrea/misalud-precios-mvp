@@ -1,0 +1,53 @@
+# Git
+.git
+.gitignore
+.github
+
+# Node modules (se instalan en el build)
+node_modules
+app/node_modules
+
+# Testing
+tests
+app/coverage
+*.spec.ts
+*.test.ts
+jest.config.js
+
+# Documentation
+docs
+report
+README.md
+audit
+
+# Tooling
+.tooling
+
+# Environment files (use .env.example as template)
+.env
+*.env.local
+
+# Logs
+*.log
+npm-debug.log*
+logs
+
+# Database (SQLite - se genera en runtime)
+app/data/*.sqlite
+app/data/*.sqlite-*
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp
+*.tmp

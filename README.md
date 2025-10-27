@@ -130,6 +130,87 @@ Comandos disponibles:
 - `listar-parametros` — muestra la configuración actual por categoría.
 - `set-parametro --cat 1 --margen 0.28 --umbralRojo 22 --umbralAmarillo 8 --min -5 --max 5 [--usuario cli]` — actualiza parámetros con la misma validación de la API, generando log `update_parametros`.
 
+## Deployment
+
+### Opción 1: Railway (Recomendado - Gratis)
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template)
+
+1. Haz clic en el botón "Deploy on Railway"
+2. Conecta tu repositorio de GitHub
+3. Railway detectará automáticamente el `railway.json` y `Dockerfile`
+4. Configura las variables de entorno (opcionales, ya vienen por defecto):
+   - `PORT=3000`
+   - `DEMO_ALLOW_ALL=false`
+   - `CSV_DEFAULT_SEP=,`
+5. Railway desplegará automáticamente tu aplicación
+6. Accede a tu app en la URL generada (ej: `https://misalud-precios-production.railway.app`)
+
+### Opción 2: Render (Gratis)
+
+1. Crea una cuenta en [render.com](https://render.com)
+2. Desde el dashboard, selecciona "New +" → "Blueprint"
+3. Conecta tu repositorio de GitHub
+4. Render detectará automáticamente el `render.yaml`
+5. Haz clic en "Apply" para desplegar
+6. Tu app estará disponible en `https://misalud-precios-api.onrender.com`
+
+**Nota**: El plan gratuito de Render "duerme" después de 15 minutos de inactividad. El primer request puede tardar ~30 segundos.
+
+### Opción 3: Docker Local
+
+```bash
+# Construir imagen
+make build
+
+# Levantar servicio
+make run
+
+# Ver logs
+make logs
+
+# Detener servicio
+make stop
+```
+
+La aplicación estará disponible en `http://localhost:3000`. Los datos SQLite se persisten en `./app/data`.
+
+### Opción 4: VPS (DigitalOcean, AWS, etc.)
+
+```bash
+# En el servidor
+git clone https://github.com/bgcorrea/misalud-precios-mvp.git
+cd misalud-precios-mvp
+cp .env.example .env
+# Editar .env según necesidades
+
+# Con Docker
+docker compose up -d
+
+# O manualmente
+cd app
+npm install
+npm start
+```
+
+Para producción, considera usar:
+- **PM2** para gestión de procesos: `npm install -g pm2 && pm2 start npm --name "misalud-api" -- start`
+- **Nginx** como reverse proxy
+- **Certbot** para SSL/HTTPS
+
+### Variables de Entorno
+
+Todas las plataformas soportan las siguientes variables (ver `.env.example`):
+
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `PORT` | `3000` | Puerto del servidor |
+| `HOST` | `0.0.0.0` | Host del servidor |
+| `DEMO_ALLOW_ALL` | `false` | Permite rutas admin sin autenticación (solo demo) |
+| `CSV_DEFAULT_SEP` | `,` | Separador CSV por defecto |
+| `RATE_LIMIT_WINDOW_MS` | `900000` | Ventana de rate limiting (15 min) |
+| `RATE_LIMIT_MAX` | `100` | Máximo de requests por ventana |
+
 ## Portar a Laravel 7 + SQL Server
 
 - **Modelo de datos**: `db/schema_mssql.sql` / `db/seed_mssql.sql` (usa `DATEADD` para fechas relativas, DECIMAL(18,4) para montos).
