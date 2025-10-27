@@ -21,13 +21,13 @@ const nextPageBtn = document.getElementById("nextPage");
 const rolIcon = document.getElementById("rolIcon");
 const rolText = document.getElementById("rolText");
 const generarListaBtn = document.getElementById("btnGenerarLista");
-const btnGenerarListaSide = document.getElementById("btnGenerarListaSide");
-const listasContent = document.getElementById("listasContent");
+const historicoModal = document.getElementById("historicoModal");
+const closeModalBtn = document.getElementById("closeModal");
+const closeModalFooterBtn = document.getElementById("closeModalBtn");
 const tableView = document.getElementById("tableView");
 const chartView = document.getElementById("chartView");
 const toggleTableBtn = document.getElementById("toggleTable");
 const toggleChartBtn = document.getElementById("toggleChart");
-const closePanelBtn = document.getElementById("closePanel");
 const historicoTemplate = document.getElementById("historicoTemplate");
 const toastPanel = document.getElementById("toast");
 const searchInput = document.getElementById("searchInput");
@@ -89,15 +89,6 @@ function updateRoleUi() {
       generarListaBtn.classList.remove("opacity-50", "cursor-not-allowed");
     } else {
       generarListaBtn.classList.add("opacity-50", "cursor-not-allowed");
-    }
-  }
-
-  if (btnGenerarListaSide) {
-    btnGenerarListaSide.disabled = !isGerencia;
-    if (isGerencia) {
-      btnGenerarListaSide.classList.remove("opacity-50", "cursor-not-allowed");
-    } else {
-      btnGenerarListaSide.classList.add("opacity-50", "cursor-not-allowed");
     }
   }
 }
@@ -270,6 +261,11 @@ async function guardarProducto(id) {
 
 async function cargarHistorico(id) {
   try {
+    // Abrir el modal
+    if (historicoModal) {
+      historicoModal.classList.remove("hidden");
+    }
+
     const respuesta = await fetch(`/api/productos/${id}/historico`, {
       headers: {
         "x-role": state.rol,
@@ -282,6 +278,7 @@ async function cargarHistorico(id) {
     renderHistorico(data);
   } catch (error) {
     showToast("Error al cargar el histórico.", "error");
+    closeHistoricoModal();
   }
 }
 
@@ -387,103 +384,49 @@ nextPageBtn.addEventListener("click", () => {
   }
 });
 
-closePanelBtn.addEventListener("click", () => {
-  tableView.innerHTML = '<p class="text-gray-500 text-center py-8">Seleccione un producto para ver su historial</p>';
-  chartView.classList.add("hidden");
-  tableView.classList.remove("hidden");
-  toggleTableBtn.classList.add("bg-white", "text-blue-600", "shadow-sm");
-  toggleTableBtn.classList.remove("text-gray-600");
-  toggleChartBtn.classList.remove("bg-white", "text-blue-600", "shadow-sm");
-  toggleChartBtn.classList.add("text-gray-600");
-});
+// Función para cerrar el modal de historial
+function closeHistoricoModal() {
+  if (historicoModal) {
+    historicoModal.classList.add("hidden");
+    tableView.innerHTML = '<p class="text-gray-500 text-center py-8">Cargando historial...</p>';
+    chartView.classList.add("hidden");
+    tableView.classList.remove("hidden");
+    toggleTableBtn.classList.add("bg-white", "text-blue-600", "shadow-sm");
+    toggleTableBtn.classList.remove("text-gray-600");
+    toggleChartBtn.classList.remove("bg-white", "text-blue-600", "shadow-sm");
+    toggleChartBtn.classList.add("text-gray-600");
 
-async function fetchListas() {
-  try {
-    const respuesta = await fetch("/api/listas/vigente", {
-      headers: { "x-role": state.rol },
-    });
-
-    if (respuesta.status === 404) {
-      listasContent.innerHTML = `
-        <div class="text-center py-6 text-gray-500">
-          <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
-          <p class="text-sm font-medium">No hay listas base generadas</p>
-          <p class="text-xs mt-1">Use el botón de abajo para crear una</p>
-        </div>
-      `;
-      return;
+    // Destruir gráficos si existen
+    if (state.comprasChart) {
+      state.comprasChart.destroy();
+      state.comprasChart = null;
     }
-
-    if (!respuesta.ok) {
-      throw new Error("Error al cargar listas");
+    if (state.ventasChart) {
+      state.ventasChart.destroy();
+      state.ventasChart = null;
     }
-
-    const listaVigente = await respuesta.json();
-    renderListas([listaVigente]);
-  } catch (error) {
-    listasContent.innerHTML = `
-      <div class="text-center py-6 text-red-500">
-        <p class="text-sm font-medium">Error al cargar las listas</p>
-      </div>
-    `;
   }
 }
 
-function renderListas(listas) {
-  if (!listas || listas.length === 0) {
-    listasContent.innerHTML = `
-      <div class="text-center py-6 text-gray-500">
-        <p class="text-sm">No hay listas disponibles</p>
-      </div>
-    `;
-    return;
-  }
-
-  listasContent.innerHTML = listas
-    .map(
-      (lista) => `
-    <div class="bg-gradient-to-r from-emerald-50 to-green-50 p-4 rounded-lg border-2 border-emerald-200 hover:border-emerald-300 transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <div>
-          <div class="text-sm font-bold text-gray-800">Lista #${lista.codigo}</div>
-          <div class="text-xs text-gray-600">${new Date(lista.fecha_generacion).toLocaleString("es-ES")}</div>
-        </div>
-        <button
-          data-descargar="${lista.id}"
-          class="flex items-center justify-center w-10 h-10 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
-          title="Descargar CSV"
-          aria-label="Descargar lista ${lista.codigo}">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  `
-    )
-    .join("");
-
-  document.querySelectorAll("[data-descargar]").forEach((btn) =>
-    btn.addEventListener("click", (event) => {
-      const id = event.currentTarget.dataset.descargar;
-      descargarLista(id);
-    })
-  );
+// Event listeners para cerrar el modal
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", closeHistoricoModal);
 }
 
-function descargarLista(listaId) {
-  const url = `/api/listas/${listaId}/descargar?sep=;`;
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `lista_${listaId}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  showToast("Descargando lista...", "success");
+if (closeModalFooterBtn) {
+  closeModalFooterBtn.addEventListener("click", closeHistoricoModal);
 }
 
+// Cerrar modal al hacer click en el fondo oscuro
+if (historicoModal) {
+  historicoModal.addEventListener("click", (e) => {
+    if (e.target === historicoModal) {
+      closeHistoricoModal();
+    }
+  });
+}
+
+// Generar nueva lista base
 async function generarNuevaLista() {
   if (state.rol !== "Gerencia") {
     showToast("Función disponible solo para Gerencia.", "error");
@@ -507,8 +450,18 @@ async function generarNuevaLista() {
     }
 
     const data = await respuesta.json();
-    showToast(`Lista ${data.codigo} generada con éxito.`, "success");
-    fetchListas();
+    showToast(`Lista ${data.codigo} generada con éxito. Puede descargarla desde el enlace de descarga.`, "success");
+
+    // Ofrecer descarga inmediata
+    setTimeout(() => {
+      const url = `/api/listas/${data.id}/descargar?sep=;`;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `lista_${data.codigo}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 500);
   } catch (error) {
     showToast("Error al generar la lista base.", "error");
   }
@@ -516,10 +469,6 @@ async function generarNuevaLista() {
 
 if (generarListaBtn) {
   generarListaBtn.addEventListener("click", generarNuevaLista);
-}
-
-if (btnGenerarListaSide) {
-  btnGenerarListaSide.addEventListener("click", generarNuevaLista);
 }
 
 // Búsqueda con debounce
@@ -758,5 +707,4 @@ btnCerrarSesion.addEventListener("click", () => {
 updateRoleUi();
 fetchCategorias();
 fetchProductos();
-fetchListas();
 

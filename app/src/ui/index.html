@@ -115,10 +115,7 @@
 
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- Products Table Section -->
-      <div class="lg:col-span-2 space-y-6">
+    <!-- Products Table Section -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 animate-slide-down">
           <!-- Card Header -->
           <div class="bg-gradient-to-r from-slate-50 to-blue-50 px-6 py-4 border-b border-slate-200">
@@ -226,89 +223,84 @@
             </div>
           </div>
         </div>
+  </main>
+
+  <!-- Modal Historial -->
+  <div id="historicoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-slide-down">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+          <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          Historial de Producto
+        </h2>
+        <button id="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </div>
 
-      <!-- Sidebar -->
-      <div class="lg:col-span-1 space-y-6">
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 140px);">
+        <!-- Toggle: Tabla vs Gráficos -->
+        <div class="flex items-center justify-center space-x-2 mb-6 bg-gray-100 rounded-lg p-1" id="viewToggle">
+          <button id="toggleTable" class="flex-1 px-4 py-2.5 text-sm font-medium rounded-md transition-all bg-white text-blue-600 shadow-sm">
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+            Ver Tabla
+          </button>
+          <button id="toggleChart" class="flex-1 px-4 py-2.5 text-sm font-medium rounded-md transition-all text-gray-600 hover:text-gray-900">
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Ver Gráficos
+          </button>
+        </div>
 
-        <!-- Listas Base Panel -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 animate-slide-up">
-          <div class="bg-gradient-to-r from-emerald-50 to-green-50 px-5 py-4 border-b border-slate-200">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+        <!-- Vista Tabla -->
+        <div id="tableView" class="space-y-4">
+          <p class="text-gray-500 text-center py-8">Cargando historial...</p>
+        </div>
+
+        <!-- Vista Gráficos -->
+        <div id="chartView" class="hidden space-y-6">
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 shadow-sm">
+            <h4 class="text-base font-bold text-gray-800 mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Precios de Compra (Últimos 90 días)
+            </h4>
+            <div style="position: relative; height: 250px;">
+              <canvas id="comprasChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-green-100 p-6 rounded-xl border border-emerald-200 shadow-sm">
+            <h4 class="text-base font-bold text-gray-800 mb-4 flex items-center">
               <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              Listas Base
-            </h2>
-          </div>
-          <div class="p-5">
-            <div id="listasContent" class="mb-4 space-y-3"></div>
-            <button id="btnGenerarListaSide" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:from-emerald-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              Generar Nueva Lista
-            </button>
+              Volumen de Ventas (Últimos 90 días)
+            </h4>
+            <div style="position: relative; height: 250px;">
+              <canvas id="ventasChart"></canvas>
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Historial Panel -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-5 py-4 border-b border-slate-200">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-              <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              Historial Reciente
-            </h2>
-          </div>
-          <div class="p-5">
-            <!-- Toggle: Tabla vs Gráficos -->
-            <div class="flex items-center justify-center space-x-2 mb-4 bg-gray-100 rounded-lg p-1" id="viewToggle">
-              <button id="toggleTable" class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all bg-white text-blue-600 shadow-sm">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                Tabla
-              </button>
-              <button id="toggleChart" class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all text-gray-600 hover:text-gray-900">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                Gráficos
-              </button>
-            </div>
-
-            <!-- Vista Tabla -->
-            <div id="tableView" class="space-y-3 max-h-96 overflow-y-auto">
-              <p class="text-gray-500 text-center py-8">Seleccione un producto para ver su historial</p>
-            </div>
-
-            <!-- Vista Gráficos -->
-            <div id="chartView" class="hidden space-y-4">
-              <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <h4 class="text-sm font-bold text-gray-700 mb-3">Precios de Compra (Últimos 90 días)</h4>
-                <div style="position: relative; height: 200px;">
-                  <canvas id="comprasChart"></canvas>
-                </div>
-              </div>
-              <div class="bg-white p-4 rounded-lg border border-gray-200">
-                <h4 class="text-sm font-bold text-gray-700 mb-3">Volumen de Ventas (Últimos 90 días)</h4>
-                <div style="position: relative; height: 200px;">
-                  <canvas id="ventasChart"></canvas>
-                </div>
-              </div>
-            </div>
-
-            <button id="closePanel" class="mt-4 w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">
-              Cerrar
-            </button>
-          </div>
-        </div>
-
+      <!-- Modal Footer -->
+      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
+        <button id="closeModalBtn" class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-all">
+          Cerrar
+        </button>
       </div>
     </div>
-  </main>
+  </div>
 
   <template id="historicoTemplate">
     <div class="space-y-4">
