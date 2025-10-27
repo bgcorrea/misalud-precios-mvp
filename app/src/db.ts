@@ -66,9 +66,26 @@ export function resetDemoDatabase() {
     dbInstance.close();
     dbInstance = null;
   }
-  if (fileExists(DATA_PATH)) {
-    fs.unlinkSync(DATA_PATH);
+
+  // Eliminar todos los archivos relacionados con SQLite (incluyendo WAL y SHM)
+  const dataDir = path.dirname(DATA_PATH);
+  const baseName = path.basename(DATA_PATH);
+  const relatedFiles = [
+    DATA_PATH,
+    `${DATA_PATH}-wal`,
+    `${DATA_PATH}-shm`,
+  ];
+
+  for (const file of relatedFiles) {
+    if (fileExists(file)) {
+      try {
+        fs.unlinkSync(file);
+      } catch (error) {
+        // Ignorar errores al eliminar archivos que pueden no existir
+      }
+    }
   }
+
   getDb();
 }
 

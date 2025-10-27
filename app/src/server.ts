@@ -15,6 +15,7 @@ import {
 import { validarParametrosEntrada } from "./utils/parametros";
 import { obtenerRol, requireGerencia, RolUsuario } from "./middleware/auth";
 import { errorHandler, notFoundHandler } from "./middleware/error";
+import { authenticateUser, generateToken, validateToken } from "./auth";
 
 function detectProjectRoot(): string {
   const candidates = [
@@ -208,6 +209,62 @@ export function buildServer() {
     })
   );
 
+  // Endpoints de autenticación
+  app.post(
+    "/api/auth/login",
+    asyncHandler((req, res) => {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username y password son requeridos" });
+      }
+
+      const user = authenticateUser(username, password);
+
+      if (!user) {
+        return res.status(401).json({ error: "Credenciales inválidas" });
+      }
+
+      const token = generateToken(user);
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          username: user.username,
+          nombre: user.nombre,
+          rol: user.rol
+        }
+      });
+    })
+  );
+
+  app.post(
+    "/api/auth/validate",
+    asyncHandler((req, res) => {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+
+      if (!token) {
+        return res.status(401).json({ error: "Token no proporcionado" });
+      }
+
+      const user = validateToken(token);
+
+      if (!user) {
+        return res.status(401).json({ error: "Token inválido o expirado" });
+      }
+
+      res.json({
+        valid: true,
+        user: {
+          username: user.username,
+          nombre: user.nombre,
+          rol: user.rol
+        }
+      });
+    })
+  );
+
   app.get(
     "/api/categorias",
     asyncHandler((_req, res) => {
@@ -231,6 +288,7 @@ export function buildServer() {
       // Filtros de búsqueda
       const search = req.query.search ? String(req.query.search).trim() : "";
       const categoria = req.query.categoria ? String(req.query.categoria) : "";
+      const semaforo = req.query.semaforo ? String(req.query.semaforo).toUpperCase() : "";
 
       // Construir WHERE clause dinámicamente
       const whereClauses: string[] = [];
@@ -249,26 +307,23 @@ export function buildServer() {
 
       const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-      const totalRow = db
-        .prepare(`SELECT COUNT(*) as total FROM productos p INNER JOIN categorias c ON c.id = p.categoria_id ${whereClause}`)
-        .get(...whereParams) as { total: number };
-
+      // Si hay filtro de semáforo, necesitamos obtener TODOS los productos filtrados para calcular semáforo
+      // y luego aplicar paginación. Para datasets grandes, esto se optimizaría con una vista materializada.
       const productos = db
         .prepare(
           `SELECT p.*, c.nombre as categoria_nombre, c.fragmentado
            FROM productos p
            INNER JOIN categorias c ON c.id = p.categoria_id
            ${whereClause}
-           ORDER BY p.codigo_interno
-           LIMIT ? OFFSET ?`
+           ORDER BY p.codigo_interno`
         )
-        .all(...whereParams, pageSize, offset) as ProductoRow[];
+        .all(...whereParams) as ProductoRow[];
 
       if (productos.length === 0) {
         return res.json({
           page,
           pageSize,
-          total: totalRow.total,
+          total: 0,
           data: [],
         });
       }
@@ -289,7 +344,8 @@ export function buildServer() {
          ORDER BY fecha DESC LIMIT 25`
       );
 
-      const data = productos.map((row) => {
+      // Procesar todos los productos y calcular semáforo
+      const allData = productos.map((row) => {
         const parametros = parametrosMap.get(row.categoria_id);
         if (!parametros) {
           throw Object.assign(new Error(`No se encontraron parámetros para la categoría ${row.categoria_id}`), { status: 500 });
@@ -324,10 +380,19 @@ export function buildServer() {
         };
       });
 
+      // Aplicar filtro de semáforo si existe
+      const filteredData = semaforo
+        ? allData.filter(p => p.semaforo === semaforo)
+        : allData;
+
+      // Aplicar paginación sobre datos filtrados
+      const total = filteredData.length;
+      const data = filteredData.slice(offset, offset + pageSize);
+
       res.json({
         page,
         pageSize,
-        total: totalRow.total,
+        total,
         data,
       });
     })
@@ -782,17 +847,11 @@ export function buildServer() {
 
   app.use("/ui", express.static(path.resolve(ROOT_PATH, "app", "src", "ui")));
 
+  // Ruta raíz redirige al login
   app.get(
     "/",
     asyncHandler((_req, res) => {
-      res.sendFile(path.resolve(ROOT_PATH, "app", "src", "ui", "index-new.html"));
-    })
-  );
-
-  app.get(
-    "/old",
-    asyncHandler((_req, res) => {
-      res.sendFile(path.resolve(ROOT_PATH, "app", "src", "ui", "index.html"));
+      res.sendFile(path.resolve(ROOT_PATH, "app", "src", "ui", "login.html"));
     })
   );
 

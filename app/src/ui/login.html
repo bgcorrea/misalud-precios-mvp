@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiSalud - Inicio de Sesión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md">
+    <!-- Logo y Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl shadow-lg mb-4">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-800">MiSalud Precios</h1>
+      <p class="text-gray-600 mt-2">Sistema de Gestión de Precios</p>
+    </div>
+
+    <!-- Card de Login -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <form id="loginForm" class="space-y-6">
+
+        <!-- Usuario -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Usuario
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              autocomplete="username"
+              class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Tu usuario"
+            >
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Contraseña
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="••••••••"
+            >
+          </div>
+        </div>
+
+        <!-- Mensaje de Error -->
+        <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span id="errorText">Credenciales inválidas</span>
+          </div>
+        </div>
+
+        <!-- Botón de Login -->
+        <button
+          type="submit"
+          id="loginButton"
+          class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-lg hover:shadow-xl"
+        >
+          Iniciar Sesión
+        </button>
+
+      </form>
+
+      <!-- Info de Usuarios Demo -->
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        <p class="text-xs text-gray-500 text-center mb-3">Usuarios de demostración:</p>
+        <div class="space-y-2 text-xs">
+          <div class="bg-blue-50 rounded-lg p-3">
+            <p class="font-semibold text-blue-900">Operador:</p>
+            <p class="text-blue-700">Usuario: <code class="bg-blue-100 px-1 rounded">operador1</code> / Contraseña: <code class="bg-blue-100 px-1 rounded">operador123</code></p>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-3">
+            <p class="font-semibold text-purple-900">Gerencia:</p>
+            <p class="text-purple-700">Usuario: <code class="bg-purple-100 px-1 rounded">gerencia1</code> / Contraseña: <code class="bg-purple-100 px-1 rounded">gerencia123</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-6 text-sm text-gray-600">
+      <p>MiSalud &copy; 2025 - Sistema MVP</p>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const loginButton = document.getElementById('loginButton');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Ocultar mensaje de error
+      errorMessage.classList.add('hidden');
+
+      // Deshabilitar botón
+      loginButton.disabled = true;
+      loginButton.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+      const formData = new FormData(loginForm);
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Guardar token y usuario en localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Redirigir a la aplicación
+          window.location.href = '/ui/index.html';
+        } else {
+          // Mostrar error
+          errorText.textContent = data.error || 'Error al iniciar sesión';
+          errorMessage.classList.remove('hidden');
+        }
+      } catch (error) {
+        errorText.textContent = 'Error de conexión con el servidor';
+        errorMessage.classList.remove('hidden');
+      } finally {
+        // Rehabilitar botón
+        loginButton.disabled = false;
+        loginButton.innerHTML = 'Iniciar Sesión';
+      }
+    });
+
+    // Verificar si ya está logueado
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Verificar si el token es válido
+        fetch('/api/auth/validate', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            // Token válido, redirigir
+            window.location.href = '/ui/index.html';
+          }
+        })
+        .catch(() => {
+          // Token inválido, limpiar
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
