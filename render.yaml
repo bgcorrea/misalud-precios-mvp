@@ -6,16 +6,3 @@ services:
     dockerContext: .
     healthCheckPath: /api/health
     plan: free
-    envVars:
-      - key: PORT
-        value: 3000
-      - key: HOST
-        value: 0.0.0.0
-      - key: DEMO_ALLOW_ALL
-        value: false
-      - key: CSV_DEFAULT_SEP
-        value: ","
-      - key: RATE_LIMIT_WINDOW_MS
-        value: 900000
-      - key: RATE_LIMIT_MAX
-        value: 100

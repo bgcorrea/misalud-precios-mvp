@@ -32,12 +32,20 @@ RUN mkdir -p /app/data
 # Copy .env.example as template
 COPY .env.example /app/.env.example
 
-# Expose port
+# Set default environment variables
+ENV PORT=3000 \
+    HOST=0.0.0.0 \
+    DEMO_ALLOW_ALL=false \
+    CSV_DEFAULT_SEP=, \
+    RATE_LIMIT_WINDOW_MS=900000 \
+    RATE_LIMIT_MAX=100
+
+# Expose port (Railway will override with $PORT)
 EXPOSE 3000
 
-# Health check
+# Health check (uses PORT env var)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
+  CMD node -e "const port = process.env.PORT || 3000; require('http').get('http://localhost:' + port + '/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"
 
 # Start application
 CMD ["tsx", "src/server.ts"]
