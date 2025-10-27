@@ -26,6 +26,9 @@ COPY app/src ./src
 COPY app/scripts ./scripts
 COPY app/tsconfig.json ./
 
+# Copy database schemas and seeds (required for initialization)
+COPY db /db
+
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
